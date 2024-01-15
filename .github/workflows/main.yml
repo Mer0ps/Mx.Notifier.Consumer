@@ -1,0 +1,54 @@
+name: Build and Release
+
+on:
+  release:
+    types:
+      - created
+
+env:
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/src/Mx.Notifier.Consumer/bin/Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: nuget
+          path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+
+  push-nuget:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: nuget
+          path: nuget
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      - name: Push to NuGet
+        run: |
+          dotnet nuget add source --username Mer0ps --password ${{ secrets.NUGET_PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Mer0ps/index.json"
+          dotnet nuget push nuget/*.nupkg --api-key ${{ secrets.NUGET_PACKAGE_TOKEN }} --source "github"
+          dotnet nuget push nuget/*.nupkg --api-key ${{ secrets.NUGET_API_TOKEN }} --source https://api.nuget.org/v3/index.json
