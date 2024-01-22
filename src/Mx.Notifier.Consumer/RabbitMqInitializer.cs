@@ -26,14 +26,15 @@ public class RabbitMqInitializer
             HostName = _config.HostName,
             UserName = _config.UserName,
             Password = _config.Password,
+            DispatchConsumersAsync = true
         };
 
-        using var connection = factory.CreateConnection();
-        using var channel = connection.CreateModel();
+        var connection = factory.CreateConnection();
+        var channel = connection.CreateModel();
 
         //Please do not use QueueDeclare as the user lacks the authorization to generate new queues.
 
-        var consumer = new EventingBasicConsumer(channel);
+        var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += async (model, eventArgs) =>
         {
             try
