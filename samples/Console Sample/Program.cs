@@ -15,7 +15,7 @@ try
 
     var initializer = new RabbitMqInitializer(config);
 
-    initializer.MessageReceived += HandleCustomMessage;
+    initializer.MessageReceivedAsync += HandleCustomMessageAsync;
 
     initializer.Initialize();
 
@@ -25,7 +25,7 @@ catch (Exception ex)
     Console.WriteLine($"Error: {ex.Message}");
 }
 
-static void HandleCustomMessage(BlockEvent? blockEvent)
+async Task HandleCustomMessageAsync(BlockEvent? blockEvent)
 {
     var filteredEvent = blockEvent?.Events ?? Enumerable.Empty<Event>();
 

@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/Mer0ps/Mx.Notifier.Consumer/tree/master/src/Mx.Notifier.Consumer</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <Company>Mer0ps</Company>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Title>Mx.Notifier.Consumer</Title>
     <PackageReadmeFile>README.md</PackageReadmeFile>

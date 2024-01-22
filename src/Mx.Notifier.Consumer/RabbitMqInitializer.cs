@@ -9,10 +9,10 @@ public class RabbitMqInitializer
 {
     private readonly RabbitConfig _config;
 
-    public delegate void MessageReceivedHandler(BlockEvent? blockEvent);
+    public delegate Task MessageReceivedHandler(BlockEvent? blockEvent);
 
     // Event trigger when a message is received
-    public event MessageReceivedHandler MessageReceived;
+    public event MessageReceivedHandler MessageReceivedAsync;
 
     public RabbitMqInitializer(RabbitConfig config)
     {
@@ -34,7 +34,7 @@ public class RabbitMqInitializer
         //Please do not use QueueDeclare as the user lacks the authorization to generate new queues.
 
         var consumer = new EventingBasicConsumer(channel);
-        consumer.Received += (model, eventArgs) =>
+        consumer.Received += async (model, eventArgs) =>
         {
             try
             {
@@ -43,7 +43,7 @@ public class RabbitMqInitializer
                 var eventData = JsonConvert.DeserializeObject<BlockEvent?>(message);
 
                 // trigger custom logic
-                OnMessageReceived(eventData);
+                await OnMessageReceivedAsync(eventData);
 
                 //Ack the message when done.
                 channel.BasicAck(eventArgs.DeliveryTag, false);
@@ -63,9 +63,12 @@ public class RabbitMqInitializer
         Console.ReadLine();
     }
 
-    // Custom logic when a messag is received
-    protected virtual void OnMessageReceived(BlockEvent? blockEvent)
+    // Custom logic when a message is received
+    protected virtual async Task OnMessageReceivedAsync(BlockEvent? blockEvent)
     {
-        MessageReceived?.Invoke(blockEvent);
+        if (MessageReceivedAsync != null)
+        {
+            await MessageReceivedAsync?.Invoke(blockEvent);
+        }
     }
 }
