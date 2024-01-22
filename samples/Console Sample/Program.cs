@@ -19,6 +19,8 @@ try
 
     initializer.Initialize();
 
+    Console.ReadLine();
+
 }
 catch (Exception ex)
 {

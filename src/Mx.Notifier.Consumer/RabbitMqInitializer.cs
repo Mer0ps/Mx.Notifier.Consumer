@@ -60,7 +60,6 @@ public class RabbitMqInitializer
         channel.BasicConsume(queue: _config.QueueName, autoAck: _config.AutoAck, consumer: consumer);
 
         Console.WriteLine($"Consumer with queue name {_config.QueueName} is initialized.");
-        Console.ReadLine();
     }
 
     // Custom logic when a message is received
